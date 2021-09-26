@@ -1,0 +1,50 @@
+{
+  "name": "le-atlas",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "gen": "next build && next export"
+  },
+  "dependencies": {
+    "highlight.js": "^11.2.0",
+    "next": "11.1.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-force-graph": "^1.41.7",
+    "react-markdown": "^7.0.1",
+    "rehype": "^12.0.0",
+    "rehype-document": "^6.0.0",
+    "rehype-external-links": "^1.0.0",
+    "rehype-format": "^4.0.0",
+    "rehype-highlight": "^5.0.0",
+    "rehype-katex": "^6.0.1",
+    "rehype-meta": "^3.1.0",
+    "rehype-picture": "^4.0.0",
+    "rehype-raw": "^6.1.0",
+    "rehype-react": "^7.0.2",
+    "rehype-shiki": "^0.0.9",
+    "rehype-stringify": "^9.0.2",
+    "rehype-toc": "^3.0.2",
+    "remark": "^14.0.1",
+    "remark-footnotes": "^4.0.1",
+    "remark-gfm": "^2.0.0",
+    "remark-math": "^5.1.0",
+    "remark-mermaid": "^0.2.0",
+    "remark-rehype": "^9.1.0",
+    "remark-slug": "^7.0.0",
+    "remark-stringify": "^10.0.0",
+    "three": "^0.132.2",
+    "three-spritetext": "^1.6.2",
+    "unified": "^10.1.0",
+    "unist-util-visit": "^4.1.0"
+  },
+  "devDependencies": {
+    "@mdx-js/loader": "^1.6.22",
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.2"
+  }
+}

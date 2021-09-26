@@ -1,0 +1,60 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+main {
+  margin: auto;
+  width: 60%;
+  max-width: 800px;
+  padding: 20px;
+}
+
+code {
+  border-radius: 5px;
+}
+
+a-scene {
+  height: 100vh !important;
+}
+
+h1.graph {
+  position: absolute;
+  color: white;
+  z-index: 10000;
+  text-align: center;
+  width: 100%;
+}
+
+.mermaid {
+  text-align: center;
+}
+
+p > img, li > img {
+  width: 80%;
+  margin: auto;
+  display: block;
+}
+
+footer {
+  text-align: center;
+}
+
+/* Dead Internal Links */
+a[href="#"], a[href="#"]:visited,
+a[href="##"], a[href="##"]:visited {
+  color: grey;
+}
+
+/* External Links */
+a[href^="http"]:before {
+     content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIpJREFUeNqEkIEJwCAMBGPpEs7hHK6hY+gauoZr6Bo6RtqEWkxb6EMQnuM/USEirIoxSmOKwDkhBEwp4VPkb4801Xun9xW4e+9FldYarLUvkBPPOp4JGWOgtSaSt6VWQKUU9nPOEiSIgAmNMdadFTjn7utqrXwh6fLvH9nXhamW5ksMnpfDnw4BBgBfunO056MmqAAAAABJRU5ErkJggg==) " ";
+     text-decoration: none;
+     display: inline-block;
+     padding-right: 0.25rem;
+}
