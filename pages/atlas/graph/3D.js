@@ -3,39 +3,51 @@ import { notes } from "../../../utils/atlasManagement";
 import dynamic from "next/dynamic";
 import Router from "next/router";
 import SpriteText from "three-spritetext";
+import { useEffect, useRef } from "react";
+// Open issue on Next
 const ForceGraph3D = dynamic(() =>
     import("../../../utils/forceGraph3DNoSSR"), {ssr: false})
 
-
 export default function Graph3DPage({ notes, data }) {
+    const graphRef = useRef();
+    useEffect(() => {
+        // TODO: Find out why this doesn't work
+        console.log(graphRef.current)
+        graphRef && graphRef.current && graphRef.current.d3Force && graphRef.current.d3Force("link", link => 1000);
+    }, []);
+
     return <>
         <Head>
             <title>Le Atlas: 3D Graph</title>
         </Head>
         <ForceGraph3D
-            controlType="fly"
+            ref={graphRef}
             graphData={data}
-            nodeThreeObjectExtend={true}
+            nodeLabel={node => notes[node.id].title}
             nodeAutoColorBy="id"
+            controlType="fly"
+            nodeThreeObjectExtend={true}
             linkWidth={2}
             nodeVal={({value}) => value}
-            linkDirectionalParticleResolution={2}
-            linkDirectionalParticles={8}
+            linkDirectionalParticles={10}
             linkDirectionalParticleWidth={1}
-            linkDirectionalParticleSpeed={0.005}
-            nodeLabel={node => notes[node.id].title}
+            linkDirectionalParticleSpeed={0.006}
+            linkResolution={2}
+            linkOpacity={0.25}
+            linkColor={({ source }) => source.color }
+            linkDirectionalParticleColor={({ source }) => source.color}
             nodeThreeObject={node => {
                 const sprite = new SpriteText(notes[node.id].title);
                 sprite.color = "#FFFFFF";
                 sprite.material.depthWrite = false;
-                sprite.color += Math.min(node.value * 50, 255).toString(16);
+                sprite.color += Math.min(node.value * 75, 255).toString(16);
                 sprite.textHeight = node.value / 2;
                 sprite.padding = 5;
-                return node.value > 1 ? sprite : null;
+                return node.value > 0 ? sprite : null;
             }}
             onNodeClick={node => {
                 console.log(node.id)
-                Router.push(`/atlas/page/${node.id}`)
+                Router.push(`/atlas/?notes=${node.id}`)
             }}
         />
     </>;

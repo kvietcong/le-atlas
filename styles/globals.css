@@ -8,27 +8,47 @@ body {
   box-sizing: border-box;
 }
 
-main {
-  margin: auto;
-  width: 60%;
-  max-width: 800px;
-  padding: 20px;
-}
-
 code {
   border-radius: 5px;
 }
 
-a-scene {
-  height: 100vh !important;
+section.note-page {
+  overflow-y: auto;
+  height: 100%;
+  padding: 25px;
+  width: 650px;
+  display: inline-block;
+  white-space: normal;
 }
 
-h1.graph {
-  position: absolute;
-  color: white;
+main.atlas {
+  height: 98vh;
+  white-space: nowrap;
+}
+
+span.wikilink {
+  cursor: pointer;
+  text-decoration: underline;
+  color: -webkit-link;
+}
+
+#__next {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+nav {
+  position: fixed;
+  top: 0;
   z-index: 10000;
-  text-align: center;
-  width: 100%;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+h1 {
+  font-size: 2em;
 }
 
 .mermaid {
@@ -48,11 +68,12 @@ footer {
 /* Dead Internal Links */
 a[href="#"], a[href="#"]:visited,
 a[href="##"], a[href="##"]:visited {
-  color: grey;
+  pointer-events: none;
+  opacity: 0.55;
 }
 
 /* External Links */
-a[href^="http"]:before {
+a.external:before {
      content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIpJREFUeNqEkIEJwCAMBGPpEs7hHK6hY+gauoZr6Bo6RtqEWkxb6EMQnuM/USEirIoxSmOKwDkhBEwp4VPkb4801Xun9xW4e+9FldYarLUvkBPPOp4JGWOgtSaSt6VWQKUU9nPOEiSIgAmNMdadFTjn7utqrXwh6fLvH9nXhamW5ksMnpfDnw4BBgBfunO056MmqAAAAABJRU5ErkJggg==) " ";
      text-decoration: none;
      display: inline-block;
