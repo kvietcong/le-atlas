@@ -11,7 +11,7 @@ export const rehypeChangeInternalLinks = options => {
                 node.properties.href = undefined;
                 node.properties.link = slug;
                 node.properties.className = ["wikilink"]
-            } else if (href.includes("http", "://")) {
+            } else if (["http", "://"].every(type => href.includes(type))) {
                 node.properties.className
                     ? node.properties.className += " external"
                     : node.properties.className = "external"
