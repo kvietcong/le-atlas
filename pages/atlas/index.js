@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { useEffect, useState } from "react";
 import { notes } from "../../utils/atlasManagement";
 import NotePage from "../../components/NotePage";
@@ -25,7 +26,7 @@ export default function PostPage({ notes }) {
     const addPane = (newPane, fromPane) => {
         const newIndex = notePanes.indexOf(newPane);
         const fromIndex = notePanes.indexOf(fromPane);
-        if (newIndex < 0 || newIndex > fromIndex) {
+        if (newIndex < 0 || newIndex > fromIndex + 1) {
             setNotePanes([
                 ...notePanes.slice(0, fromIndex + 1),
                 newPane]);
@@ -37,15 +38,16 @@ export default function PostPage({ notes }) {
         document.getElementById(currentPane)?.scrollIntoView({
             behavior: "smooth", inline: "center", block: "center"
         });
-    }, [ currentPane ]);
+    }, [ currentPane ])
 
     useEffect(() => {
         if(!router.isReady) return;
         const { query } = router;
-        const newNotePanes = query?.notes && decodeURIComponent(query?.notes).split(",");
+        const newNotePanes = query?.notes
+            && decodeURIComponent(query?.notes).split(",");
         if (newNotePanes) {
             setNotePanes(newNotePanes);
-            setCurrentPane(newNotePanes[newNotePanes.length - 1]);
+            setCurrentPane(newNotePanes[newNotePanes.length - 1])
         }
     }, [ router ]);
 
@@ -78,9 +80,13 @@ export default function PostPage({ notes }) {
             </button>
         </nav>
         <main className="atlas">
-            {notePanes.map((note, i) =>
-                <NotePage key={i}
-                    note={notes[note]} addPane={addPane}/>)}
+            {/* NGL Pretty janky at times but it looks Epic XD */}
+            <TransitionGroup component={null}>
+                {notePanes.map(note =>
+                    <CSSTransition classNames="page" key={note} timeout={1000}>
+                        <NotePage note={notes[note]} addPane={addPane} />
+                    </CSSTransition>)}
+            </TransitionGroup>
         </main>
     </>);
 };
