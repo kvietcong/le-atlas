@@ -46,6 +46,7 @@ html, body {
   color: var(--main-fg);
   background-color: var(--main-bg);
   font-family: "Merriweather", serif;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 * {
@@ -56,6 +57,7 @@ a, span.wikilink {
   color: var(--link);
   cursor: pointer;
   text-decoration: none;
+  transition: color 0.3s ease-in-out;
 }
 
 /* Dead Internal Links */
@@ -79,9 +81,11 @@ button {
   margin: 5px 10px;
   color: var(--ref-fg);
   background-color: var(--ref-bg);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 button > a {
   color: var(--ref-fg);
+  transition: color 0.3s ease-in-out;
 }
 
 code {
@@ -98,6 +102,7 @@ section.note-page {
   display: inline-block;
   color: var(--note-fg);
   background-color: var(--note-bg);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 section.note-page > button {
@@ -117,6 +122,7 @@ section.inlinks, section.metadata {
   border-radius: 10px;
   color: var(--ref-fg);
   background-color: var(--ref-bg);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .katex .katex-mathml {
@@ -143,7 +149,7 @@ nav {
   bottom: 25px;
 }
 
-pre {
+code.hljs {
   white-space: pre-wrap;
   padding: 35px !important;
 }
