@@ -3,6 +3,7 @@ import matter from "gray-matter";
 import path from "path";
 import slugify from "slugify";
 import { notesFolder, resourcesFolder, validNoteExtensions, validResourceExtensions } from "../atlas.config";
+import { markdownToHtmlAst } from "./parsing";
 
 const root = process.cwd();
 
@@ -98,6 +99,7 @@ const buildNoteDatabase = () => {
         const { outlinks, newContent } = processWikiLinks(note.content, notes)
         note.outlinks = outlinks;
         note.content = newContent;
+        note.htmlAst = JSON.stringify(markdownToHtmlAst(note.content));
     }
 
     // Get Inlinks for every note

@@ -1,7 +1,7 @@
 // https://github.com/highlightjs/highlight.js/tree/main/src/styles for more code styles
 import "highlight.js/styles/nord.css";
 import { useEffect, useRef } from "react";
-import { mdToReact } from "../utils/parsers";
+import { htmlAstToReact, markdownToReact } from "../utils/parsing";
 
 const attachSmoothScroll = ref =>
     ref.current.querySelectorAll("a[href^='#']").forEach(anchor => {
@@ -18,7 +18,7 @@ const attachSmoothScroll = ref =>
     });
 
 export default function NotePage({ note, addPane }) {
-    const { content, inlinks, metadata } = note;
+    const { htmlAst, inlinks, metadata, link: fromPane } = note;
 
     const pageRef = useRef();
     const scrollToTop = () =>
@@ -26,9 +26,16 @@ export default function NotePage({ note, addPane }) {
 
     useEffect(() => attachSmoothScroll(pageRef), [ note ]);
 
-    return <section id={note.link} ref={pageRef} className="note-page">
+    return <section id={fromPane} ref={pageRef} className="note-page">
+        <button onClick={scrollToTop}>Scroll to top</button>
         <section className="content">
-            {mdToReact(content, addPane, note.link)}
+            {/* The method below goes from content to render but takes longer */}
+            {/* {markdownToReact(content, { addPane, fromPane })} */}
+
+            {/* This method has the static generation handle everything except
+                for the actual React parsing part. HOWEVER, this uses
+                `JSON.stringify` and `JSON.parse`, which I'm skeptical of. */}
+            {htmlAstToReact(JSON.parse(htmlAst), { addPane, fromPane })}
         </section>
         <section className="inlinks">
             <h1>Inlinks: Pages that Reference this Page</h1>
@@ -36,18 +43,16 @@ export default function NotePage({ note, addPane }) {
                 {inlinks.length ? inlinks.map(({link, title}, i) => (
                     <li key={i}><span
                         className="wikilink"
-                        onClick={() => addPane(link, note.link)}
+                        onClick={() => addPane(link, fromPane)}
                     >
                         {title}
                     </span></li>
                 )) : "No Inlinks :("}
             </ul>
-            <button onClick={scrollToTop}>Scroll To Top</button>
         </section>
         <section className="metadata">
             <h1>Metadata</h1>
-            <pre className="language-json">{metadata}</pre>
-            <button onClick={scrollToTop}>Scroll To Top</button>
+            <pre>{metadata}</pre>
         </section>
     </section>
 }

@@ -1,72 +1,61 @@
+:root {
+  --nord0: #2E3440;
+  --nord1: #3B4252;
+  --nord2: #434C5E;
+  --nord3: #4C566A;
+  --nord4: #D8DEE9;
+  --nord5: #E5E9F0;
+  --nord6: #ECEFF4;
+  --nord7: #8FBCBB;
+  --nord8: #88C0D0;
+  --nord9: #81A1C1;
+  --nord10: #5E81AC;
+  --nord11: #BF616A;
+  --nord12: #D08770;
+  --nord13: #EBCB8B;
+  --nord14: #A3BE8C;
+  --nord15: #B48EAD;
+}
+
+body.dark-mode {
+  --main-bg: black;
+  --main-fg: white;
+  --note-bg: black;
+  --note-fg: white;
+  --ref-bg: #202020;
+  --ref-fg: #EDEDED;
+  --border: #424242;
+  --link: Chartreuse;
+}
+
+body.light-mode {
+  --main-bg: navajowhite;
+  --main-fg: black;
+  --note-bg: #fbf1c7;
+  --note-fg: black;
+  --ref-bg: khaki;
+  --ref-fg: #242424;
+  --border: rgb(125, 100, 75);
+  --link: #d65d0e;
+}
+
+
 html, body {
   margin: 0;
   padding: 0;
+  color: var(--main-fg);
+  background-color: var(--main-bg);
+  font-family: "Merriweather", serif;
 }
 
 * {
   box-sizing: border-box;
 }
 
-code {
-  border-radius: 5px;
-}
-
-section.note-page {
-  overflow-y: auto;
-  height: 100%;
-  padding: 25px;
-  width: 650px;
-  display: inline-block;
-  white-space: normal;
-}
-
-.katex .katex-mathml {
-  height: 0 !important;
-  width: 0 !important;
-}
-
-main.atlas {
-  height: 98vh;
-  white-space: nowrap;
-}
-
-span.wikilink {
+a, span.wikilink {
+  color: var(--link);
   cursor: pointer;
-  text-decoration: underline;
-  color: -webkit-link;
-}
-
-#__next {
-  height: 100vh;
-  overflow-y: hidden;
-}
-
-nav {
-  position: fixed;
-  top: 0;
-  z-index: 10000;
-}
-
-pre {
-  white-space: pre-wrap;
-}
-
-h1 {
-  font-size: 2em;
-}
-
-.mermaid {
-  text-align: center;
-}
-
-p > img, li > img {
-  width: 80%;
-  margin: auto;
-  display: block;
-}
-
-footer {
-  text-align: center;
+  text-decoration: none;
 }
 
 /* Dead Internal Links */
@@ -82,6 +71,87 @@ a.external:before {
      text-decoration: none;
      display: inline-block;
      padding-right: 0.25rem;
+}
+
+button {
+  border-radius: 10px;
+  padding: 5px 10px;
+  margin: 5px 10px;
+  color: var(--ref-fg);
+  background-color: var(--ref-bg);
+}
+button > a {
+  color: var(--ref-fg);
+}
+
+code {
+  border-radius: 5px;
+}
+
+section.note-page {
+  overflow-y: auto;
+  height: 100%;
+  padding: 25px;
+  width: 650px;
+  border: 1px solid var(--border);
+  white-space: normal;
+  display: inline-block;
+  color: var(--note-fg);
+  background-color: var(--note-bg);
+}
+
+section.note-page > button {
+  position: sticky;
+  float: right;
+  top: 15px;
+}
+
+section.content {
+  overflow-wrap: break-word;
+}
+
+section.inlinks, section.metadata {
+  width: 90%;
+  margin: 60px auto;
+  padding: 60px;
+  border-radius: 10px;
+  color: var(--ref-fg);
+  background-color: var(--ref-bg);
+}
+
+.katex .katex-mathml {
+  height: 0 !important;
+  width: 0 !important;
+}
+
+main.atlas {
+  height: 98vh;
+  white-space: nowrap;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+nav {
+  position: fixed;
+  bottom: 25px;
+}
+
+pre {
+  white-space: pre-wrap;
+  padding: 35px !important;
+}
+
+* > img {
+  width: 80%;
+  margin: auto;
+  display: block;
 }
 
 .page-enter {
