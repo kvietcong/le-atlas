@@ -1,7 +1,19 @@
 // https://github.com/highlightjs/highlight.js/tree/main/src/styles for more code styles
 import "highlight.js/styles/nord.css";
 import { useEffect, useRef } from "react";
-import { htmlAstToReact, markdownToReact } from "../utils/parsing";
+import { htmlAstToReact } from "../utils/parsing";
+
+const renderMermaid = ref =>
+    ref.current.querySelectorAll("div.mermaid") .forEach(el => {
+        if (el.firstChild.nodeName === "svg") return;
+        mermaid && mermaid.render(
+            `mermaid-${Math.round(Math.random() * 100)}`, el.innerText,
+            svg => {
+                const newEl = document.createElement("div");
+                newEl.innerHTML = svg;
+                el.parentElement.replaceChild(newEl, el);
+            })
+    });
 
 const attachSmoothScroll = ref =>
     ref.current.querySelectorAll("a[href^='#']").forEach(anchor => {
@@ -24,10 +36,16 @@ export default function NotePage({ note, addPane }) {
     const scrollToTop = () =>
         pageRef.current.scroll({ top: 0, left: 0, behavior: "smooth" });
 
+    const scrollToBottom = () =>
+        pageRef.current.scroll({ top: pageRef.current.scrollHeight, left: 0, behavior: "smooth" });
+
     useEffect(() => attachSmoothScroll(pageRef), [ note ]);
+    useEffect(() => renderMermaid(pageRef), [ note ]);
 
     return <section id={fromPane} ref={pageRef} className="note-page">
-        <button onClick={scrollToTop}>Scroll to top</button>
+        <button className="scroll-top" onClick={scrollToTop}>
+            Scroll to top
+        </button>
         <section className="content">
             {/* The method below goes from content to render but takes longer */}
             {/* {markdownToReact(content, { addPane, fromPane })} */}
@@ -54,5 +72,8 @@ export default function NotePage({ note, addPane }) {
             <h1>Metadata</h1>
             <pre>{metadata}</pre>
         </section>
+        <button className="scroll-bottom" onClick={scrollToBottom}>
+            Scroll to bottom
+        </button>
     </section>
 }

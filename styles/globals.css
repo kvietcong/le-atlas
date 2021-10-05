@@ -92,6 +92,10 @@ code {
   border-radius: 5px;
 }
 
+pre {
+  overflow-wrap: break-word;
+}
+
 section.note-page {
   overflow-y: auto;
   height: 100%;
@@ -105,10 +109,16 @@ section.note-page {
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-section.note-page > button {
+section.note-page > button.scroll-top {
   position: sticky;
   float: right;
   top: 15px;
+}
+
+section.note-page > button.scroll-bottom {
+  position: sticky;
+  float: right;
+  bottom: 15px;
 }
 
 section.content {
@@ -154,27 +164,12 @@ code.hljs {
   padding: 35px !important;
 }
 
+pre {
+  white-space: pre-wrap;
+}
+
 * > img {
   width: 80%;
   margin: auto;
   display: block;
-}
-
-.page-enter {
-  opacity: 0;
-  transform: translateX(-100%);
-}
-.page-enter-active {
-  opacity: 1;
-  transform: translateX(0%);
-  transition: opacity 1000ms, transform 600ms;
-}
-.page-exit {
-  opacity: 1;
-  transform: translateX(-100%);
-}
-.page-exit-active {
-  opacity: 0;
-  transform: translateX(-200%);
-  transition: opacity 100ms, transform 500ms;
 }
