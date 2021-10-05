@@ -45,6 +45,7 @@ const linkifyNoteName = filename => [
 const readNote = filePath =>
     fs.readFileSync(path.resolve(filePath), "utf-8");
 
+// Probably the worst way to do this XD
 const processWikiLinks = (content, notes) =>  {
     const outlinks = new Set();
     const newContent = content.replace(/\[\[([^\]]+)\]\]/g,
@@ -63,6 +64,8 @@ const processWikiLinks = (content, notes) =>  {
             file = linkifyNoteName(file);
             if (file in notes) {
                 outlinks.add(file);
+                return `[${alias}](/atlas/page/${file}/)`;
+                // Heading links not compatible atm
                 return `[${alias}](/atlas/page/${file}${heading ? `#${heading}` : ""}/)`;
             }
 

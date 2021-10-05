@@ -4,7 +4,6 @@ import rehypeFormat from "rehype-format";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
 import rehypeReact from "rehype-react";
-import rehypeStringify from "rehype-stringify/lib";
 import toc from "rehype-toc";
 import remarkFootnotes from "remark-footnotes";
 import remarkGfm from "remark-gfm";
@@ -48,13 +47,15 @@ const rehypeFixMermaid = options => {
     }
 };
 
-const parseMarkdown = unified().use(remarkParse).parse;
+const parseMarkdown = unified()
+    .use(remarkParse)
+    .use(remarkMath)
+    .use(remarkGfm)
+    .use(remarkFootnotes, { inlineNotes: true })
+    .parse;
 
 const applyMarkdownAstExtensions = unified()
-    .use(remarkFootnotes, { inlineNotes: true })
-    .use(remarkMath)
     .use(remarkSlug)
-    .use(remarkGfm)
     .runSync;
 
 const markdownAstToHtmlAst = unified().use(remarkRehype).runSync;
