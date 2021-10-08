@@ -4,8 +4,10 @@ import dynamic from "next/dynamic";
 import Router from "next/router";
 import SpriteText from "three-spritetext";
 import { useMemo } from "react";
-const ForceGraph3D = dynamic(() =>
-    import("../../../utils/forceGraph3DNoSSR"), {ssr: false})
+const ForceGraph3D = dynamic(
+    () => import("react-force-graph").then(module => module.ForceGraph3D),
+    {ssr: false}
+);
 
 
 export default function Graph2DPage({ notes, data }) {
