@@ -9,6 +9,7 @@ import { AtlasContext } from "../_app";
 export default function PostPage({ notes }) {
     const router = useRouter();
     const [ isShowingNav, setIsShowingNav ] = useState(false);
+    const [ isInitialized, setIsInitialized ] = useState(false);
     const [ notePanes, setNotePanes ] = useState(["-_Index_-"]);
     const [ currentPane, setCurrentPane ] = useState(notePanes[0]);
     const { isDarkMode, setIsDarkMode } = useContext(AtlasContext);
@@ -17,9 +18,11 @@ export default function PostPage({ notes }) {
         const newIndex = notePanes.indexOf(newPane);
         const fromIndex = notePanes.indexOf(fromPane);
         if (newIndex < 0 || newIndex > fromIndex + 1) {
-            setNotePanes([
-                ...notePanes.slice(0, fromIndex + 1),
-                newPane]);
+            const newPanes = [...notePanes.slice(0, fromIndex + 1), newPane];
+            setNotePanes(newPanes);
+            router.push(`?notes=${newPanes.join(";")}`,
+                        undefined,
+                        { shallow: true });
         }
         setCurrentPane(newPane);
     };
@@ -31,7 +34,7 @@ export default function PostPage({ notes }) {
     }, [ currentPane ])
 
     useEffect(() => {
-        if(!router.isReady) return;
+        if(!router.isReady || isInitialized) return;
         const { query } = router;
         const newNotePanes = query?.notes
             && decodeURIComponent(query?.notes).split(";");
@@ -39,17 +42,11 @@ export default function PostPage({ notes }) {
             setNotePanes(newNotePanes);
             setCurrentPane(newNotePanes[newNotePanes.length - 1])
         }
-    }, [ router ]);
+        setIsInitialized(true);
+    }, [ router, isInitialized ]);
 
-    useEffect(() => {
-        if(!router.isReady) return;
-        const { query } = router;
-        const newQuery = encodeURIComponent(notePanes.join(";"));
-        if (encodeURIComponent(query.notes) === newQuery) return;
-        query.notes = newQuery;
-        // Causes Lag atm
-        // router.push(`?notes=${query.notes}`, undefined, { shallow: true });
-    }, [ router, notePanes ])
+    const smoothScroll = (x, y) =>
+        window.scroll({top: y, left: x, behavior: "smooth"});
 
     return (<>
         <Head>
@@ -69,10 +66,16 @@ export default function PostPage({ notes }) {
             onMouseLeave={() => setIsShowingNav(false)}
         >
             <button hidden={isShowingNav}>▶️</button>
-            <button onClick={() => setCurrentPane(notePanes[0])} hidden={!isShowingNav}>
+            <button onClick={() => smoothScroll(0, 0)}
+                hidden={!isShowingNav}
+            >
                 Go to first note
             </button>
-            <button onClick={() => setCurrentPane(notePanes.at(-1))} hidden={!isShowingNav}>
+            <button
+                onClick={() =>
+                    smoothScroll(notePanes.length * 1000, window.outerHeight)}
+                hidden={!isShowingNav}
+            >
                 Go to last note
             </button>
             <button onClick={() => {

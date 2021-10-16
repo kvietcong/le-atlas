@@ -2,6 +2,7 @@
 import "highlight.js/styles/nord.css";
 import { useEffect, useRef } from "react";
 import { htmlAstToReact } from "../utils/parsing";
+import { useSpring, animated } from "react-spring";
 
 const renderMermaid = ref =>
     ref.current.querySelectorAll("div.mermaid") .forEach(el => {
@@ -19,7 +20,6 @@ const attachSmoothScroll = ref =>
     ref.current.querySelectorAll("a[href^='#']").forEach(anchor => {
         const link = anchor.getAttribute("href").split("#")[1];
         anchor.addEventListener("click", event => {
-            console.log(link, ref.current.querySelector(`[id="${link}"]`))
             event.preventDefault();
             // This leaves behind event listeners that don't do anything so I
             // had to do a null check. React doesn't seem to clean them up.
@@ -31,18 +31,35 @@ const attachSmoothScroll = ref =>
 
 export default function NotePage({ note, addPane }) {
     const { htmlAst, inlinks, metadata, link: fromPane } = note;
+    const spring = useSpring({
+        from: {
+            opacity: 0,
+            x: "-75%",
+        },
+        to: {
+            opacity: 1,
+            x: "0",
+        }
+    });
 
     const pageRef = useRef();
     const scrollToTop = () =>
         pageRef.current.scroll({ top: 0, left: 0, behavior: "smooth" });
 
     const scrollToBottom = () =>
-        pageRef.current.scroll({ top: pageRef.current.scrollHeight, left: 0, behavior: "smooth" });
+        pageRef.current.scroll({
+            top: pageRef.current.scrollHeight, left: 0, behavior: "smooth"
+        });
 
     useEffect(() => attachSmoothScroll(pageRef), [ note ]);
     useEffect(() => renderMermaid(pageRef), [ note ]);
 
-    return <section id={fromPane} ref={pageRef} className="note-page">
+    return <animated.section
+        style={spring}
+        id={fromPane}
+        ref={pageRef}
+        className="note-page"
+    >
         <button className="scroll-top" onClick={scrollToTop}>
             Scroll to top
         </button>
@@ -75,5 +92,5 @@ export default function NotePage({ note, addPane }) {
         <button className="scroll-bottom" onClick={scrollToBottom}>
             Scroll to bottom
         </button>
-    </section>
+    </animated.section>
 }
