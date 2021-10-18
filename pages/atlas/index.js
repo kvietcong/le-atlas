@@ -31,7 +31,7 @@ export default function PostPage({ notes }) {
 
     useEffect(() => {
         document.getElementById(currentPane)?.scrollIntoView({
-            behavior: "smooth", inline: "center"
+            behavior: "smooth", inline: "start"
         });
     }, [ currentPane ]);
 
