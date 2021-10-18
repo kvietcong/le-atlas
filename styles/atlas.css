@@ -1,0 +1,38 @@
+#atlas-pages {
+  overflow-y: hidden;
+  height: 100vh;
+  padding-top: 2.5rem;
+  white-space: nowrap;
+}
+
+section.atlas-page {
+  overflow-y: auto;
+  height: 100%; /* This be doing weird stuff */
+  padding: 25px;
+  width: 650px;
+  border: 1px solid var(--border);
+  white-space: normal;
+  display: inline-block;
+  color: var(--note-fg);
+  background-color: var(--note-bg);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+section.content {
+  overflow-wrap: break-word;
+}
+
+section.inlinks, section.metadata {
+  width: 90%;
+  margin: 60px auto;
+  padding: 60px;
+  border-radius: 10px;
+  color: var(--ref-fg);
+  background-color: var(--ref-bg);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.katex .katex-mathml {
+  height: 0 !important;
+  width: 0 !important;
+}

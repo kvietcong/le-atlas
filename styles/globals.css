@@ -39,8 +39,11 @@ body.light-mode {
   --link: #d65d0e;
 }
 
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+body {
   margin: 0;
   padding: 0;
   color: var(--main-fg);
@@ -49,8 +52,10 @@ html, body {
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-* {
-  box-sizing: border-box;
+* > img {
+  width: 95%;
+  margin: auto;
+  display: block;
 }
 
 a, span.wikilink {
@@ -61,8 +66,7 @@ a, span.wikilink {
 }
 
 /* Dead Internal Links */
-a[href="#"], a[href="#"]:visited,
-a[href="##"], a[href="##"]:visited {
+a[href="#"], a[href="#"]:visited {
   pointer-events: none;
   opacity: 0.55;
 }
@@ -83,67 +87,6 @@ button {
   background-color: var(--ref-bg);
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
-button > a {
-  color: var(--ref-fg);
-  transition: color 0.3s ease-in-out;
-}
-
-code {
-  border-radius: 5px;
-}
-
-pre {
-  overflow-wrap: break-word;
-}
-
-section.note-page {
-  overflow-y: auto;
-  height: 100%;
-  padding: 25px;
-  width: 650px;
-  border: 1px solid var(--border);
-  white-space: normal;
-  display: inline-block;
-  color: var(--note-fg);
-  background-color: var(--note-bg);
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-section.note-page > button.scroll-top {
-  position: sticky;
-  float: right;
-  top: 15px;
-}
-
-section.note-page > button.scroll-bottom {
-  position: sticky;
-  float: right;
-  bottom: 15px;
-}
-
-section.content {
-  overflow-wrap: break-word;
-}
-
-section.inlinks, section.metadata {
-  width: 90%;
-  margin: 60px auto;
-  padding: 60px;
-  border-radius: 10px;
-  color: var(--ref-fg);
-  background-color: var(--ref-bg);
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-.katex .katex-mathml {
-  height: 0 !important;
-  width: 0 !important;
-}
-
-main.atlas {
-  height: 98vh;
-  white-space: nowrap;
-}
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
@@ -156,20 +99,26 @@ h1 {
 
 nav {
   position: fixed;
-  bottom: 25px;
-}
-
-code.hljs {
-  white-space: pre-wrap;
-  padding: 35px !important;
+  display: flex;
+  align-items: center;
+  justify-content: last baseline;
+  height: 2.5rem;
+  width: 100%;
+  background-color: var(--border);
 }
 
 pre {
   white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
-* > img {
-  width: 80%;
-  margin: auto;
-  display: block;
+pre > code {
+  white-space: pre-wrap;
+  padding: 35px !important;
+  border-radius: 5px;
+}
+
+code {
+  padding: 0.05rem 0.3rem;
+  background-color: var(--ref-bg);
 }

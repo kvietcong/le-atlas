@@ -1,5 +1,3 @@
-// https://github.com/highlightjs/highlight.js/tree/main/src/styles for more code styles
-import "highlight.js/styles/nord.css";
 import { useEffect, useRef } from "react";
 import { htmlAstToReact } from "../utils/parsing";
 import { useSpring, animated } from "react-spring";
@@ -30,19 +28,13 @@ const attachSmoothScroll = ref =>
     });
 
 export default function NotePage({ note, addPane }) {
+    const pageRef = useRef();
     const { htmlAst, inlinks, metadata, link: fromPane } = note;
     const spring = useSpring({
-        from: {
-            opacity: 0,
-            x: "-75%",
-        },
-        to: {
-            opacity: 1,
-            x: "0",
-        }
+        from: { opacity: 0, x: "-75%" },
+        to: { opacity: 1, x: "0" }
     });
 
-    const pageRef = useRef();
     const scrollToTop = () =>
         pageRef.current.scroll({ top: 0, left: 0, behavior: "smooth" });
 
@@ -54,13 +46,17 @@ export default function NotePage({ note, addPane }) {
     useEffect(() => attachSmoothScroll(pageRef), [ note ]);
     useEffect(() => renderMermaid(pageRef), [ note ]);
 
+    const stickyRight = { position: "sticky", float: "right" };
+    const scrollTopStyle = {...stickyRight, top: "15px" };
+    const scrollBotStyle = {...stickyRight, bottom: "15px" };
+
     return <animated.section
         style={spring}
         id={fromPane}
         ref={pageRef}
-        className="note-page"
+        className="atlas-page"
     >
-        <button className="scroll-top" onClick={scrollToTop}>
+        <button style={scrollTopStyle} onClick={scrollToTop}>
             Scroll to top
         </button>
         <section className="content">
@@ -68,8 +64,9 @@ export default function NotePage({ note, addPane }) {
             {/* {markdownToReact(content, { addPane, fromPane })} */}
 
             {/* This method has the static generation handle everything except
-                for the actual React parsing part. HOWEVER, this uses
-                `JSON.stringify` and `JSON.parse`, which I'm skeptical of. */}
+                for the actual React transformation part. HOWEVER, this uses
+                `JSON.stringify` and `JSON.parse`, which I'm skeptical of for
+                complex data structure situations like this. */}
             {htmlAstToReact(JSON.parse(htmlAst), { addPane, fromPane })}
         </section>
         <section className="inlinks">
@@ -89,7 +86,7 @@ export default function NotePage({ note, addPane }) {
             <h1>Metadata</h1>
             <pre>{metadata}</pre>
         </section>
-        <button className="scroll-bottom" onClick={scrollToBottom}>
+        <button style={scrollBotStyle} onClick={scrollToBottom}>
             Scroll to bottom
         </button>
     </animated.section>
