@@ -39,7 +39,10 @@ export default function Home({ notes }) {
             the <a
               href="https://github.com/oantolin/orderless"
               target="_blank" rel="noreferrer"
-            >Orderless</a> Emacs plugin (Though not even close in implementation)
+            >Orderless</a> Emacs plugin
+            (Though not even close in implementation).
+            The current implementation is like Fuzzy Searching. However I was
+            too lazy to do any fancier things like edit distances and stuff 🤣
           </p>
           <input
             type="text"
@@ -49,12 +52,23 @@ export default function Home({ notes }) {
           />
           <ul>
             {noteSearch(search, Object.entries(notes))
-              .map(([slug, note]) =>
-                <li key={slug}>
-                  <Link href={`/atlas/?notes=${slug}`}>
-                    {note.title}
-                  </Link>
+              .map(([slug, note]) => {
+                const { title, metadata } = note;
+                const { aliases } = JSON.parse(metadata);
+                return <li key={slug}>
+                  <Link href={`/atlas/?notes=${slug}`}>{title}</Link>
+                  <br/>
+                  {aliases && <>
+                    <details>
+                      <summary>Aliases</summary>
+                      <ul>
+                        {aliases.map((alias, i) => <li key={i}>{alias}</li>)}
+                      </ul>
+                    </details>
+                  </>
+                  }
                 </li>
+              }
               )}
           </ul>
         </section>
