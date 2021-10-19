@@ -12,6 +12,9 @@ export const time = (...args) => {
 export const escapeRegExp = string =>
     string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+export const getDistinct = (items, change = x => x) =>
+    [...new Set(items?.map(change))];
+
 export const noteSearch = (search, notes) => {
     if (!search) return notes;
 
@@ -21,20 +24,20 @@ export const noteSearch = (search, notes) => {
         const regex = new RegExp(regexString, "gi");
 
         // My code be unreadable XD
-        const getMatches = toMatch =>
-            [...new Set(toMatch.match(regex)?.map(x => x.toLowerCase()))];
-        const matches = [
-            getMatches(note.title),
-            ...(JSON.parse(note.metadata).aliases
-                ?.reduce((aliasMatches, alias) =>
-                    aliasMatches.concat(getMatches(alias)), []) || [])
-        ];
-        matches.sort((a, b) => b.length - a.length);
+        const { aliases } = JSON.parse(note.metadata);
+        const getMatches = toMatch => toMatch.match(regex) || [];
+        const titleMatches = getMatches(note.title);
+        const aliasMatches = aliases?.reduce(
+            (aliasMatches, alias) =>
+                [...aliasMatches, ...getMatches(alias)], []) || [];
+        const allMatches = getDistinct([...titleMatches, ...aliasMatches]);
+        allMatches.sort((a, b) => b.length - a.length);
 
-        scores[slug] = matches.reduce(
+        scores[slug] = allMatches.reduce(
             (accumulated, item, i) => item.length / (i+1) + accumulated, 0);
         return scores;
     }, {});
+    console.log(scores)
 
     const result = notes.filter(([slug, _]) => scores[slug])
     result.sort(([a, _a], [b, _b]) =>
