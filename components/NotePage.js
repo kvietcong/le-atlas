@@ -27,9 +27,9 @@ const attachSmoothScroll = ref =>
         });
     });
 
-export default function NotePage({ note, addPane }) {
+export default function NotePage({ note, addPane, getTitle }) {
     const pageRef = useRef();
-    const { htmlAst, inlinks, metadata, link: fromPane } = note;
+    const { htmlAst, inlinks, metadata, slug: fromPane } = note;
     const spring = useSpring({
         from: { opacity: 0, x: "-75%" },
         to: { opacity: 1, x: "0" }
@@ -72,12 +72,12 @@ export default function NotePage({ note, addPane }) {
         <section className="inlinks">
             <h1>Inlinks: Pages that Reference this Page</h1>
             <ul>
-                {inlinks.length ? inlinks.map(({link, title}, i) => (
+                {inlinks.length ? inlinks.map((slug, i) => (
                     <li key={i}><span
                         className="wikilink"
-                        onClick={() => addPane(link, fromPane)}
+                        onClick={() => addPane(slug, fromPane)}
                     >
-                        {title}
+                        {getTitle(slug)}
                     </span></li>
                 )) : "No Inlinks :("}
             </ul>
@@ -90,4 +90,4 @@ export default function NotePage({ note, addPane }) {
             Scroll to bottom
         </button>
     </animated.section>
-}
+};

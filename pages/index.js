@@ -4,10 +4,10 @@ import { useState } from "react";
 import { notes } from "../utils/atlasManagement";
 import { noteSearch } from "../utils/general";
 
-export default function Home({ notes }) {
+export default function Home({ searchData }) {
   const [ search, setSearch ] = useState("");
   return (
-    <main id="home" style={{width: "50%", margin: "auto"}}>
+    <main id="home" style={{ width: "50%", margin: "auto" }}>
       <Head>
         <title>Le Atlas</title>
       </Head>
@@ -36,10 +36,11 @@ export default function Home({ notes }) {
           <p>
             This search is a bit special. It splits up your search into multiple
             RegExes and scores it based on the matching parts. Inspired by
-            the <a
-              href="https://github.com/oantolin/orderless"
+            the
+            <a href="https://github.com/oantolin/orderless"
               target="_blank" rel="noreferrer"
-            >Orderless</a> Emacs plugin
+            > Orderless </a>
+            Emacs plugin
             (Though not even close in implementation).
             The current implementation is like Fuzzy Searching. However I was
             too lazy to do any fancier things like edit distances and stuff 🤣
@@ -51,15 +52,13 @@ export default function Home({ notes }) {
             placeholder="Search for a Note"
           />
           <ul>
-            {noteSearch(search, Object.entries(notes))
-              .map(([slug, note]) => {
-                const { title, metadata } = note;
-                const { aliases } = JSON.parse(metadata);
-                return <li key={slug}>
+            {noteSearch(search, searchData)
+              .map(([slug, { title, aliases }]) =>
+                (<li key={slug}>
                   <Link href={`/atlas/?notes=${slug}`}>{title}</Link>
-                  <br/>
-                  {aliases && <>
-                    <details>
+                  <br />
+                  {aliases && aliases[0] && <>
+                    <details style={{ fontSize: "0.8rem", padding: "5px" }}>
                       <summary>Aliases</summary>
                       <ul>
                         {aliases.map((alias, i) => <li key={i}>{alias}</li>)}
@@ -67,9 +66,7 @@ export default function Home({ notes }) {
                     </details>
                   </>
                   }
-                </li>
-              }
-              )}
+                </li>))}
           </ul>
         </section>
       </main>
@@ -81,5 +78,10 @@ export default function Home({ notes }) {
 }
 
 export const getStaticProps = async context => {
-    return { props: { notes } };
+  const searchData = Object.entries(notes).reduce((accumulated, [slug, {title, aliases}]) => {
+    accumulated[slug] = { title, aliases };
+    return accumulated;
+  }, {});
+
+  return { props: { searchData } };
 };

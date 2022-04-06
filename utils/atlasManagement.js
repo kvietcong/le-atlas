@@ -29,29 +29,25 @@ const walk = (currentPath, dir) => {
 const resourcePaths = walk(root, "public", resourcesFolder)
     .filter(file => validResourceExtensions.includes(path.extname(file)))
     .map(resourcePath => resourcePath
-        .replace(path.join(root, "public"), "").replaceAll("\\", "/")
-    );
+        .replace(path.join(root, "public"), "")
+        .replace(/\\/g, "/"));
 
-const normalizeFileName = filename =>
-    filename.replaceAll("%20", " ").replaceAll("_", " ");
-
-const linkReducer = (current, fn) => fn(current);
-const linkifyNoteName = filename => [
-    input => input.replaceAll("%20", "_"),
-    input => input.replaceAll(" ", "_"),
-    input => input.replace(".md", ""),
-].reduce(linkReducer, filename);
+const titleToSlug = filename => [
+    input => input.replace(/%20/g, "_"),
+    input => input.replace(/ /g, "_"),
+    input => input.replace(/\.md/g, ""),
+].reduce((newName, fn) => fn(newName), filename);
 
 const readNote = filePath =>
     fs.readFileSync(path.resolve(filePath), "utf-8");
 
 // Probably the worst way to do this XD
-const processWikiLinks = (content, notes) =>  {
+const processWikiLinks = (content, notes) => {
     const outlinks = new Set();
     const newContent = content.replace(/\[\[([^\]]+)\]\]/g,
         (_wholeMatch, wholeLink) => {
-            let [ fileLink, alias ] = wholeLink.split("|");
-            if (!alias) alias = fileLink
+            const [ fileLink, possibleAlias ] = wholeLink.split("|");
+            const alias = possibleAlias ?? fileLink;
 
             if (validResourceExtensions.includes(path.extname(fileLink))) {
                 const resourceLink = resourcePaths.find(resource =>
@@ -59,21 +55,20 @@ const processWikiLinks = (content, notes) =>  {
                 return `[${alias}](${encodeURI(resourceLink)})`;
             }
 
-            let [ file, heading ] = fileLink.split("#");
-            if (heading) heading = slugify(heading, {lower: true});
-            file = linkifyNoteName(file);
-            if (file in notes) {
-                outlinks.add(file);
-                return `[${alias}](/atlas/page/${file}/)`;
-                // Heading links not compatible atm
-                return `[${alias}](/atlas/page/${file}${heading ? `#${heading}` : ""}/)`;
-            }
+            const [ title, heading ] = fileLink.split("#");
+            const fileSlug = titleToSlug(title);
+            const headingSlug = heading ? slugify(heading, { lower: true}) : null;
 
-            if (heading) return `[${alias}](#${heading})`;
+            if (fileSlug in notes) {
+                outlinks.add(fileSlug);
+                return `[${alias}](/atlas/page/${fileSlug}/)`;
+            }
+            if (headingSlug) return `[${alias}](#${headingSlug})`;
 
             return `[${alias}](#)`;
         }
-    )
+    );
+
     return { outlinks, newContent };
 };
 
@@ -82,47 +77,45 @@ const notePaths = walk(root, notesFolder)
     .filter(file => validNoteExtensions.includes(path.extname(file)));
 
 const buildNoteDatabase = () => {
-    const notes = {};
+    const noteDatabase = {};
     for (const notePath of notePaths) {
-        const { content, data } = matter(readNote(notePath));
+        const { content, data: metadata } = matter(readNote(notePath));
+        const title = path.basename(notePath, ".md");
+        const slug = titleToSlug(title);
+        const aliases = metadata.aliases ?? [];
 
         // Get Basic Data
-        const note = {
-            path: notePath,
-            link: linkifyNoteName(path.basename(notePath)),
-            content,
-            metadata: data,
+        noteDatabase[slug] = {
+            path: notePath, slug, title, aliases, content, metadata,
         };
-        notes[note.link] = {...note};
-        notes[note.link].title = normalizeFileName(notes[note.link].link);
     }
 
     // Deal with Wiki Links
-    for (const note of Object.values(notes)) {
-        const { outlinks, newContent } = processWikiLinks(note.content, notes)
-        note.outlinks = outlinks;
-        note.content = newContent;
-        note.htmlAst = JSON.stringify(markdownToHtmlAst(note.content));
+    for (const noteInfo of Object.values(noteDatabase)) {
+        const { outlinks, newContent } = processWikiLinks(noteInfo.content, noteDatabase);
+        noteInfo.outlinks = outlinks;
+        noteInfo.content = newContent;
+        noteInfo.htmlAst = JSON.stringify(markdownToHtmlAst(noteInfo.content));
     }
 
     // Get Inlinks for every note
-    for (const note of Object.values(notes)) {
-        note.inlinks = new Set();
-        for (const otherNote of Object.values(notes)) {
-            if (note !== otherNote && otherNote.outlinks.has(note.link)) {
-                note.inlinks.add({link: otherNote.link, title: otherNote.title});
+    for (const noteInfo of Object.values(noteDatabase)) {
+        noteInfo.inlinks = new Set();
+        for (const otherNoteInfo of Object.values(noteDatabase)) {
+            if (noteInfo !== otherNoteInfo && otherNoteInfo.outlinks.has(noteInfo.slug)) {
+                noteInfo.inlinks.add(otherNoteInfo.slug);
             }
         }
     }
 
     // Make note data serializable
-    for (const note of Object.values(notes)) {
+    for (const note of Object.values(noteDatabase)) {
         note.inlinks = [...note.inlinks];
         note.outlinks = [...note.outlinks];
         note.metadata = JSON.stringify(note.metadata, null, 4);
     }
 
-    return notes;
+    return noteDatabase;
 };
 
 export const notes = buildNoteDatabase();

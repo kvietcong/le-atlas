@@ -15,7 +15,7 @@ export default function PostPage({ notes }) {
     const addPane = useCallback((newPane, fromPane) => {
         const newIndex = notePanes.indexOf(newPane);
         const fromIndex = notePanes.indexOf(fromPane);
-        if (newIndex < 0 || newIndex > fromIndex + 1) {
+        if ((newIndex < 0) || (newIndex > (fromIndex + 1))) {
             const newPanes = [...notePanes.slice(0, fromIndex + 1), newPane];
             setNotePanes(newPanes);
             router.push(`?notes=${newPanes.join(";")}`,
@@ -58,6 +58,7 @@ export default function PostPage({ notes }) {
                     key={notePane}
                     note={notes[notePane]}
                     addPane={addPane}
+                    getTitle={slug => notes[slug]?.title}
                 />
             )}
         </main>

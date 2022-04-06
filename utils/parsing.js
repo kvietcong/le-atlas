@@ -67,7 +67,7 @@ const applyHtmlAstExtensions = unified()
         {
             ignoreMissing: true,
             aliases: {
-                javascript: [ "js", "dataviewjs"],
+                javascript: [ "js", "dataviewjs" ],
                 sql: [ "dataview" ]
             }
         }

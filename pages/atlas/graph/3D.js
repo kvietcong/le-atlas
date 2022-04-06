@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Router from "next/router";
 import SpriteText from "three-spritetext";
 import { useEffect, useRef } from "react";
-// Open issue on Next
+
 const ForceGraph3D = dynamic(
     () => import("react-force-graph").then(module => module.ForceGraph3D),
     {ssr: false}
@@ -14,7 +14,8 @@ export default function Graph3DPage({ notes, data }) {
     const graphRef = useRef();
     useEffect(() => {
         // TODO: Find out why this doesn't work
-        console.log(graphRef.current)
+        //       (Supposedly b/c of Next's dynamic importing)
+        console.log(graphRef.current);
         graphRef && graphRef.current && graphRef.current.d3Force && graphRef.current.d3Force("link", link => 1000);
     }, []);
 
@@ -57,19 +58,20 @@ export default function Graph3DPage({ notes, data }) {
 
 export const getStaticProps = async () => {
     const data = { nodes: [], links: [] };
-    for (const note of Object.values(notes)) {
+    for (const noteInfo of Object.values(notes)) {
         data.nodes.push({
-            id: note.link,
-            value: Math.round((note.outlinks.length / 2 + note.inlinks.length) / 2),
+            id: noteInfo.slug,
+            value: Math.round((noteInfo.outlinks.length / 2 + noteInfo.inlinks.length) / 2),
         });
-        for (const inlink of note.inlinks) {
+        for (const inlinkSlug of noteInfo.inlinks) {
             data.links.push({
-                source: inlink.link,
-                target: note.link,
+                source: inlinkSlug,
+                target: noteInfo.slug,
                 value: 10
             });
         }
-    }
+    };
+
     return {
         props: {
             notes,

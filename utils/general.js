@@ -15,34 +15,36 @@ export const escapeRegExp = string =>
 export const getDistinct = (items, change = x => x) =>
     [...new Set(items?.map(change))];
 
-export const noteSearch = (search, notes) => {
-    if (!search) return notes;
+export const noteSearch = (search, searchData) => {
+    const searchDataEntries = Object.entries(searchData);
+    if (!search) return searchDataEntries;
 
-    const scores = notes.reduce((scores, [slug, note]) => {
+    const scores = searchDataEntries.reduce((scores, [slug, data]) => {
         const searchTerms = escapeRegExp(search).split(" ");
         const regexString = `(${searchTerms.join("|")})`;
         const regex = new RegExp(regexString, "gi");
 
         // My code be unreadable XD
-        const { aliases } = JSON.parse(note.metadata);
+        const { title, aliases } = data;
         const getMatches = toMatch => toMatch.match(regex) || [];
-        const titleMatches = getMatches(note.title);
+        const titleMatches = getMatches(title);
         const aliasMatches = aliases?.reduce(
             (aliasMatches, alias) =>
                 [...aliasMatches, ...getMatches(alias)], []) || [];
-        const allMatches = getDistinct([...titleMatches, ...aliasMatches]);
-        allMatches.sort((a, b) => b.length - a.length);
+        titleMatches.sort((a, b) => b.length - a.length);
+        aliasMatches.sort((a, b) => b.length - a.length);
 
-        scores[slug] = allMatches.reduce(
+        scores[slug] = titleMatches.reduce(
             (accumulated, item, i) => item.length / (i+1) + accumulated, 0);
+        scores[slug] += aliasMatches.reduce(
+            (accumulated, item, i) => item.length / (i+1) + accumulated, 0);
+        scores[slug] /= title.length;
         return scores;
     }, {});
-    console.log(scores)
-
-    const result = notes.filter(([slug, _]) => scores[slug])
+    const result = searchDataEntries.filter(([slug, _]) => scores[slug]);
     result.sort(([a, _a], [b, _b]) =>
         scores[b] - scores[a]
         || a.length - b.length
         || a.localeCompare(b));
     return result;
-}
+};
