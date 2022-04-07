@@ -11,59 +11,29 @@ const ForceGraph3D = dynamic(
 
 
 export default function Graph2DPage({ notes, data }) {
-    useMemo(() => notes, [notes]);
-    useMemo(() => data, [data]);
-    return <>
-        <Head>
-            <title>Le Atlas: 3D Graph</title>
-        </Head>
-        <ForceGraph3D
-            controlType="orbit"
-            graphData={data}
-            nodeThreeObjectExtend={true}
-            nodeAutoColorBy="group"
-            linkWidth={2}
-            nodeVal={({value}) => value}
-            linkDirectionalParticleResolution={2}
-            linkDirectionalParticles={8}
-            linkDirectionalParticleWidth={1}
-            linkDirectionalParticleSpeed={0.005}
-            nodeLabel={node => notes[node.id].title}
-            nodeThreeObject={node => {
-                const sprite = new SpriteText(notes[node.id].title);
-                sprite.color = node.color;
-                sprite.textHeight = node.value;
-                sprite.padding = 5;
-                return node.value >= 6 ? sprite : null;
-            }}
-            onNodeClick={node => {
-                console.log(node.id)
-                Router.push(`/atlas/page/${node.id}`)
-            }}
-        />
-    </>;
+    return (<h1>Yeah not yet :(</h1>)
 };
 
 export const getStaticProps = async () => {
     const data = { nodes: [], links: [] };
-    for (const note of Object.values(notes)) {
+    for (const noteInfo of Object.values(notes)) {
         data.nodes.push({
-            id: note.link,
-            value: Math.round((note.outlinks.length / 2 + note.inlinks.length) / 2),
-            group: note.link,
+            id: noteInfo.slug,
+            value: Math.round((noteInfo.outlinks.length / 2 + noteInfo.inlinks.length) / 2),
         });
-        for (const inlink of note.inlinks) {
+        for (const inlinkSlug of noteInfo.inlinks) {
             data.links.push({
-                source: inlink.link,
-                target: note.link,
+                source: inlinkSlug,
+                target: noteInfo.slug,
                 value: 10
             });
         }
-    }
+    };
+
     return {
         props: {
             notes,
-            data
+            data,
         }
     };
 };
