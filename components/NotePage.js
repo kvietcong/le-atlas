@@ -1,6 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { htmlAstToReact } from "../utils/parsing";
 import { useSpring, animated } from "react-spring";
+import dynamic from "next/dynamic";
+import { AtlasContext } from "../pages/_app";
+
+const ReactJson = dynamic(() => import("react-json-view"), {ssr: false});
 
 const renderMermaid = ref =>
     ref.current.querySelectorAll("div.mermaid") .forEach(el => {
@@ -35,6 +39,8 @@ export default function NotePage({ note, addPane, getTitle }) {
         to: { opacity: 1, x: "0" }
     });
 
+    const { isDarkMode } = useContext(AtlasContext);
+
     const scrollToTop = () =>
         pageRef.current.scroll({ top: 0, left: 0, behavior: "smooth" });
 
@@ -46,7 +52,7 @@ export default function NotePage({ note, addPane, getTitle }) {
     useEffect(() => attachSmoothScroll(pageRef), [ note ]);
     useEffect(() => renderMermaid(pageRef), [ note ]);
 
-    const stickyRight = { position: "sticky", float: "right" };
+    const stickyRight = { position: "sticky", float: "right", zIndex: 10 };
     const scrollTopStyle = {...stickyRight, top: "15px" };
     const scrollBotStyle = {...stickyRight, bottom: "15px" };
 
@@ -60,6 +66,19 @@ export default function NotePage({ note, addPane, getTitle }) {
             Scroll to top
         </button>
         <section className="content">
+            <ReactJson
+                name={"Metadata"} collapsed={true} displayDataTypes={false}
+                quotesOnKeys={false} displayArrayKey={false} indentWidth={2}
+                theme={isDarkMode ? "greenscreen" : "bespin"}
+                style={{
+                    borderRadius: "5px",
+                    padding: "10px",
+                }}
+                src={(() => {
+                    const parsedMetadata = JSON.parse(metadata)
+                    return parsedMetadata;
+                })()}
+            />
             {/* The method below goes from content to render but takes longer */}
             {/* {markdownToReact(content, { addPane, fromPane })} */}
 
@@ -70,7 +89,7 @@ export default function NotePage({ note, addPane, getTitle }) {
             {htmlAstToReact(JSON.parse(htmlAst), { addPane, fromPane })}
         </section>
         <section className="inlinks">
-            <h1>Inlinks: Pages that Reference this Page</h1>
+            <h2>Inlinks</h2>
             <ul>
                 {inlinks.length ? inlinks.map((slug, i) => (
                     <li key={i}><span
@@ -81,10 +100,6 @@ export default function NotePage({ note, addPane, getTitle }) {
                     </span></li>
                 )) : "No Inlinks :("}
             </ul>
-        </section>
-        <section className="metadata">
-            <h1>Metadata</h1>
-            <pre>{metadata}</pre>
         </section>
         <button style={scrollBotStyle} onClick={scrollToBottom}>
             Scroll to bottom
