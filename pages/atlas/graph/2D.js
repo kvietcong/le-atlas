@@ -1,10 +1,5 @@
 import { noteDatabase } from "../../../utils/atlasManagement";
 import dynamic from "next/dynamic";
-const ForceGraph3D = dynamic(
-    () => import("react-force-graph").then(module => module.ForceGraph3D),
-    {ssr: false}
-);
-
 
 export default function Graph2DPage({ noteDatabase, data }) {
     return (<h1>Yeah not yet :(</h1>)

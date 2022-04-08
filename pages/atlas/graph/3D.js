@@ -12,7 +12,7 @@ export default function Graph3DPage({ data, noteDatabase }) {
         <Head>
             <title>Le Atlas: 3D Graph</title>
         </Head>
-        <MyForceGraph3D data={data} notes={noteDatabase} />
+        <MyForceGraph3D data={data} noteDatabase={noteDatabase} />
     </>;
 };
 
