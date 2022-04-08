@@ -3,7 +3,7 @@ import Router from "next/router";
 import { useEffect, useRef, useState } from "react";
 import SpriteText from "three-spritetext";
 
-export default function MyForceGraph3D({ data, notes }) {
+export default function MyForceGraph3D({ data, noteDatabase }) {
     const [centerForce, setCenterForce] = useState();
     const [linkDistance, setLinkDistance] = useState();
 
@@ -56,7 +56,7 @@ export default function MyForceGraph3D({ data, notes }) {
             <ForceGraph3D
                 ref={graphRef}
                 graphData={data}
-                nodeLabel={node => notes[node.id].title}
+                nodeLabel={node => noteDatabase[node.id].title}
                 nodeAutoColorBy="id"
                 nodeThreeObjectExtend={true}
                 linkWidth={2}
@@ -69,7 +69,7 @@ export default function MyForceGraph3D({ data, notes }) {
                 linkColor={({ source }) => source.color }
                 linkDirectionalParticleColor={({ source }) => source.color}
                 nodeThreeObject={node => {
-                    const sprite = new SpriteText(notes[node.id].title);
+                    const sprite = new SpriteText(noteDatabase[node.id].title);
                     sprite.color = "#FFFFFF";
                     sprite.material.depthWrite = false;
                     sprite.color += Math.min(node.value * 75, 255).toString(16);

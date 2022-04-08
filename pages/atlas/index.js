@@ -6,7 +6,7 @@ import Navigation from "../../components/Navigation";
 import NotePage from "../../components/NotePage";
 import { noteDatabase } from "../../utils/atlasManagement";
 
-export default function PostPage({ notes }) {
+export default function PostPage({ noteDatabase }) {
     const router = useRouter();
     const [ isInitialized, setIsInitialized ] = useState(false);
     const [ notePanes, setNotePanes ] = useState([]);
@@ -56,9 +56,9 @@ export default function PostPage({ notes }) {
             {notePanes.map(notePane =>
                 <NotePage
                     key={notePane}
-                    note={notes[notePane]}
+                    note={noteDatabase[notePane]}
                     addPane={addPane}
-                    getTitle={slug => notes[slug]?.title}
+                    getTitle={slug => noteDatabase[slug]?.title}
                 />
             )}
         </main>
@@ -66,5 +66,5 @@ export default function PostPage({ notes }) {
 };
 
 export const getStaticProps = async _context => {
-    return { props: { notes: noteDatabase } };
+    return { props: { noteDatabase } };
 };

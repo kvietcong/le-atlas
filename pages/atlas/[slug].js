@@ -21,7 +21,7 @@ export default function Page({ localNoteDatabase, slug }) {
                         <li key={i}><span
                             className="wikilink"
                             onClick={() => addPane(slug, fromPane)}
-                        >{getTitle(slug)}</span></li>
+                        >{localNoteDatabase[slug].title}</span></li>
                     )) : "No Inlinks :("}
                 </ul>
             </section>
