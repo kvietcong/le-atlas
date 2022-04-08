@@ -7,6 +7,10 @@ export default function Navigation({ notePanes, reset }) {
 
     return <nav>
         <button><Link href="/">Go Home 🏘️</Link></button>
+        <button onClick={() => setIsDarkMode(!isDarkMode)}>
+            {`Switch to ${isDarkMode ? "Light" : "Dark"} Mode`}
+        </button>
+        { notePanes && reset && <>
         <button onClick={() => document.getElementById(notePanes[0])
             .scrollIntoView({ behavior: "smooth" })}
         >
@@ -25,9 +29,7 @@ export default function Navigation({ notePanes, reset }) {
         }}>
             Copy URL of current pages
         </button>
-        <button onClick={() => setIsDarkMode(!isDarkMode)}>
-            {`Switch to ${isDarkMode ? "Light" : "Dark"} Mode`}
-        </button>
         <button onClick={reset}>Clear Pages</button>
+        </>}
     </nav>;
 };

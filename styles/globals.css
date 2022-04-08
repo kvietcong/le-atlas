@@ -105,6 +105,7 @@ nav {
   height: 2.5rem;
   width: 100%;
   background-color: var(--border);
+  top: 0;
 }
 
 pre {

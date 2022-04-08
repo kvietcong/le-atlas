@@ -1,5 +1,6 @@
 module.exports = {
-    notesFolder: "notes",
+    noteFolders: ["notes"],
+    recursiveSearching: true,
     // resources should be under the public folder
     resourcesFolder: "Resources",
     mainPage: "- Index -.md",

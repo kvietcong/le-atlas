@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import Navigation from "../../components/Navigation";
 import NotePage from "../../components/NotePage";
-import { notes } from "../../utils/atlasManagement";
+import { noteDatabase } from "../../utils/atlasManagement";
 
 export default function PostPage({ notes }) {
     const router = useRouter();
@@ -65,6 +65,6 @@ export default function PostPage({ notes }) {
     </>);
 };
 
-export const getStaticProps = async context => {
-    return { props: { notes } };
+export const getStaticProps = async _context => {
+    return { props: { notes: noteDatabase } };
 };

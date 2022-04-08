@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import { notes } from "../utils/atlasManagement";
+import { noteDatabase } from "../utils/atlasManagement";
 import { noteSearch } from "../utils/general";
 
 export default function Home({ searchData }) {
@@ -57,6 +57,8 @@ export default function Home({ searchData }) {
                 (<li key={slug}>
                   <Link href={`/atlas/?notes=${slug}`}>{title}</Link>
                   <br />
+                  (<Link href={`/atlas/${slug}`}>Link to Single Page</Link>)
+                  <br />
                   {aliases && aliases[0] && <>
                     <details style={{ fontSize: "0.8rem", padding: "5px" }}>
                       <summary>Aliases</summary>
@@ -77,8 +79,8 @@ export default function Home({ searchData }) {
   )
 }
 
-export const getStaticProps = async context => {
-  const searchData = Object.entries(notes).reduce((accumulated, [slug, {title, aliases}]) => {
+export const getStaticProps = async _context => {
+  const searchData = Object.entries(noteDatabase).reduce((accumulated, [slug, {title, aliases}]) => {
     accumulated[slug] = { title, aliases };
     return accumulated;
   }, {});

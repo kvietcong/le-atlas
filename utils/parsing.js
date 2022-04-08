@@ -18,7 +18,7 @@ const rehypeChangeInternalLinks = options => {
     return ast => {
         visit(ast, node => node.tagName === "a", node => {
             const { href } = node.properties
-            if (href.includes("/atlas/page/")) {
+            if (href.includes("/atlas/")) {
                 const parts = href.split("/");
                 const slug = parts[parts.length - 2]
                 node.tagName = "span";
@@ -60,50 +60,57 @@ const applyMarkdownAstExtensions = unified()
 
 const markdownAstToHtmlAst = unified().use(remarkRehype).runSync;
 
-const applyHtmlAstExtensions = unified()
-    .use(rehypeExternalLinks)
-    .use(rehypeFixMermaid)
-    .use(rehypeHighlight,
-        {
-            ignoreMissing: true,
-            aliases: {
-                javascript: [ "js", "dataviewjs" ],
-                sql: [ "dataview" ]
+const applyHtmlAstExtensions = (ast, options) => {
+    const pipeline = unified()
+        .use(rehypeExternalLinks)
+        .use(rehypeFixMermaid)
+        .use(rehypeHighlight,
+            {
+                ignoreMissing: true,
+                aliases: {
+                    javascript: [ "js", "dataviewjs" ],
+                    sql: [ "dataview" ]
+                }
             }
-        }
-    )
-    .use(toc, { nav: false })
-    .use(rehypeKatex)
-    .use(rehypeFormat)
-    .use(rehypeChangeInternalLinks)
-    .runSync
+        )
+        .use(toc, { nav: false })
+        .use(rehypeKatex)
+        .use(rehypeFormat);
+    if (options?.onClick) pipeline.use(rehypeChangeInternalLinks);
+    return pipeline.runSync(ast);
+};
 
-export const htmlAstToReact = (htmlAST, options) => unified()
+export const htmlAstToReact = (htmlAst, options) => unified()
     .use(rehypeReact, {
         createElement: React.createElement,
         components: {
             span: span => {
                 let newSpan;
-                if (span.link) {
-                    const { addPane, fromPane } = options;
+                if (span.link && options?.onClick) {
                     newSpan = <span
-                        onClick={() =>
-                            addPane(span.link, fromPane)}
+                        onClick={() => options.onClick(span.link)}
                         {...span} />;
                 }
                 return newSpan || <span {...span}></span>;
-            }
+            },
+            a: a => {
+                let newA;
+                if (options?.onEnter && options?.onLeave && a.href.contains("/atlas/")) {
+                    newA = <a onMouseEnter={() => {}} onMouseLeave={() => {}} {...a} />;
+                }
+                return newA || <a {...a}></a>;
+            },
         },
     })
-    .stringify(htmlAST);
+    .stringify(htmlAst);
 
 export const markdownToHtmlAst = markdown => {
     try {
-        const markdownAST = parseMarkdown(markdown);
-        const modifiedMarkdownAST = applyMarkdownAstExtensions(markdownAST);
+        const markdownAst = parseMarkdown(markdown);
+        const modifiedMarkdownAst = applyMarkdownAstExtensions(markdownAst);
 
-        const htmlAST = markdownAstToHtmlAst(modifiedMarkdownAST);
-        return applyHtmlAstExtensions(htmlAST);
+        const htmlAst = markdownAstToHtmlAst(modifiedMarkdownAst);
+        return applyHtmlAstExtensions(htmlAst);
     } catch (error) {
         console.error("Error in Parsing and Processing");
         console.error(error);
@@ -112,13 +119,13 @@ export const markdownToHtmlAst = markdown => {
 
 export const markdownToReact = (markdown, options) => {
     try {
-        const markdownAST = parseMarkdown(markdown);
-        const modifiedMarkdownAST = applyMarkdownAstExtensions(markdownAST);
+        const markdownAst = parseMarkdown(markdown);
+        const modifiedMarkdownAst = applyMarkdownAstExtensions(markdownAst);
 
-        const htmlAST = markdownAstToHtmlAst(modifiedMarkdownAST);
-        const modifiedHTMLAST = applyHtmlAstExtensions(htmlAST);
+        const htmlAst = markdownAstToHtmlAst(modifiedMarkdownAst);
+        const modifiedHTMLAst = applyHtmlAstExtensions(htmlAst, options);
 
-        const react = htmlAstToReact(modifiedHTMLAST, options);
+        const react = htmlAstToReact(modifiedHTMLAst, options);
         return react;
     } catch (error) {
         console.error("Error in Parsing and Processing");

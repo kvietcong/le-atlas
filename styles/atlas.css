@@ -8,8 +8,7 @@
 section.atlas-page {
   overflow-y: auto;
   height: 100%; /* This be doing weird stuff */
-  padding: 25px;
-  width: 650px;
+  width: 700px;
   border: 1px solid var(--border);
   white-space: normal;
   display: inline-block;
@@ -19,6 +18,8 @@ section.atlas-page {
 }
 
 section.content {
+  width: 80%;
+  margin: 8% auto;
   overflow-wrap: break-word;
 }
 
@@ -35,4 +36,9 @@ section.inlinks, section.metadata {
 .katex .katex-mathml {
   height: 0 !important;
   width: 0 !important;
+}
+
+main.page {
+  margin: 3rem auto;
+  max-width: 700px;
 }

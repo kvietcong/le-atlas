@@ -1,22 +1,10 @@
-import { useEffect, useRef, useContext } from "react";
-import { htmlAstToReact } from "../utils/parsing";
-import { useSpring, animated } from "react-spring";
 import dynamic from "next/dynamic";
+import { useContext, useEffect, useRef } from "react";
+import { animated, useSpring } from "react-spring";
 import { AtlasContext } from "../pages/_app";
+import { markdownToReact } from "../utils/parsing";
 
 const ReactJson = dynamic(() => import("react-json-view"), {ssr: false});
-
-const renderMermaid = ref =>
-    ref.current.querySelectorAll("div.mermaid") .forEach(el => {
-        if (el.firstChild.nodeName === "svg") return;
-        mermaid && mermaid.render(
-            `mermaid-${Math.round(Math.random() * 100)}`, el.innerText,
-            svg => {
-                const newEl = document.createElement("div");
-                newEl.innerHTML = svg;
-                el.parentElement.replaceChild(newEl, el);
-            })
-    });
 
 const attachSmoothScroll = ref =>
     ref.current.querySelectorAll("a[href^='#']").forEach(anchor => {
@@ -33,7 +21,7 @@ const attachSmoothScroll = ref =>
 
 export default function NotePage({ note, addPane, getTitle }) {
     const pageRef = useRef();
-    const { htmlAst, inlinks, metadata, slug: fromPane } = note;
+    const { content, inlinks, metadata, slug: fromPane } = note;
     const spring = useSpring({
         from: { opacity: 0, x: "-75%" },
         to: { opacity: 1, x: "0" }
@@ -50,11 +38,11 @@ export default function NotePage({ note, addPane, getTitle }) {
         });
 
     useEffect(() => attachSmoothScroll(pageRef), [ note ]);
-    useEffect(() => renderMermaid(pageRef), [ note ]);
+    useEffect(() => mermaid.init(), [ note ]);
 
     const stickyRight = { position: "sticky", float: "right", zIndex: 10 };
-    const scrollTopStyle = {...stickyRight, top: "15px" };
-    const scrollBotStyle = {...stickyRight, bottom: "15px" };
+    const scrollTopStyle = { ...stickyRight, top: "15px" };
+    const scrollBotStyle = { ...stickyRight, bottom: "15px" };
 
     return <animated.section
         style={spring}
@@ -79,14 +67,7 @@ export default function NotePage({ note, addPane, getTitle }) {
                     return parsedMetadata;
                 })()}
             />
-            {/* The method below goes from content to render but takes longer */}
-            {/* {markdownToReact(content, { addPane, fromPane })} */}
-
-            {/* This method has the static generation handle everything except
-                for the actual React transformation part. HOWEVER, this uses
-                `JSON.stringify` and `JSON.parse`, which I'm skeptical of for
-                complex data structure situations like this. */}
-            {htmlAstToReact(JSON.parse(htmlAst), { addPane, fromPane })}
+            {markdownToReact(content, { onClick: link => addPane(link, fromPane) })}
         </section>
         <section className="inlinks">
             <h2>Inlinks</h2>
@@ -95,9 +76,7 @@ export default function NotePage({ note, addPane, getTitle }) {
                     <li key={i}><span
                         className="wikilink"
                         onClick={() => addPane(slug, fromPane)}
-                    >
-                        {getTitle(slug)}
-                    </span></li>
+                    >{getTitle(slug)}</span></li>
                 )) : "No Inlinks :("}
             </ul>
         </section>

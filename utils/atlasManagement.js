@@ -2,18 +2,19 @@ import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
 import slugify from "slugify";
-import { notesFolder, resourcesFolder, validNoteExtensions, validResourceExtensions } from "../atlas.config";
-import { markdownToHtmlAst } from "./parsing";
+import { noteFolders, recursiveSearching, resourcesFolder, validNoteExtensions, validResourceExtensions } from "../atlas.config";
 
 const root = process.cwd();
 
-const walk = (currentPath, dir) => {
+const walk = (currentPath, dir, isRecursive = true) => {
     const pathToRead = path.join(currentPath, dir);
     const fileItems = fs.readdirSync(pathToRead, { withFileTypes: true });
     const allFiles = [];
     for (const fileItem of fileItems) {
         if (fileItem.isDirectory()) {
-            allFiles.push(...walk(pathToRead, fileItem.name));
+            if (isRecursive) {
+                allFiles.push(...walk(pathToRead, fileItem.name));
+            }
         } else {
             allFiles.push(path.join(pathToRead, fileItem.name));
         }
@@ -61,7 +62,7 @@ const processWikiLinks = (content, notes) => {
 
             if (fileSlug in notes) {
                 outlinks.add(fileSlug);
-                return `[${alias}](/atlas/page/${fileSlug}/)`;
+                return `[${alias}](/atlas/${fileSlug}/)`;
             }
             if (headingSlug) return `[${alias}](#${headingSlug})`;
 
@@ -73,8 +74,10 @@ const processWikiLinks = (content, notes) => {
 };
 
 // These are full paths as these are generated a build time
-const notePaths = walk(root, notesFolder)
-    .filter(file => validNoteExtensions.includes(path.extname(file)));
+const notePaths = noteFolders.map(folder =>
+    walk(root, folder, recursiveSearching)
+        .filter(file => validNoteExtensions.includes(path.extname(file)))
+).reduce((a, b) => a.concat(b), []);
 
 const buildNoteDatabase = () => {
     const noteDatabase = {};
@@ -95,7 +98,6 @@ const buildNoteDatabase = () => {
         const { outlinks, newContent } = processWikiLinks(noteInfo.content, noteDatabase);
         noteInfo.outlinks = outlinks;
         noteInfo.content = newContent;
-        noteInfo.htmlAst = JSON.stringify(markdownToHtmlAst(noteInfo.content));
     }
 
     // Get Inlinks for every note
@@ -118,4 +120,4 @@ const buildNoteDatabase = () => {
     return noteDatabase;
 };
 
-export const notes = buildNoteDatabase();
+export const noteDatabase = buildNoteDatabase();
