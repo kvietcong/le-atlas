@@ -37,8 +37,8 @@ export default function NotePage({ note, addPane, getTitle }) {
             top: pageRef.current.scrollHeight, left: 0, behavior: "smooth"
         });
 
-    useEffect(() => attachSmoothScroll(pageRef), [ note ]);
-    useEffect(() => mermaid.init(), [ note ]);
+    useEffect(() => { attachSmoothScroll(pageRef) }, [ note ]);
+    useEffect(() => { mermaid.init() }, [ note ]);
 
     const stickyRight = { position: "sticky", float: "right", zIndex: 10 };
     const scrollTopStyle = { ...stickyRight, top: "15px" };
